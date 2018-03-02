@@ -1,5 +1,12 @@
-stuff = ['a', 'b', 'c']
-other_stuff = ['d','e','f']
+import pygame
 
-for count, s in enumerate(stuff, 0):
-    print(s + other_stuff[count])
+pygame.init()
+screen = pygame.display.set_mode((400, 300))
+done = False
+
+while not done:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+
+    pygame.display.flip()
