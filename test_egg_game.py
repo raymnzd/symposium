@@ -15,6 +15,10 @@ yolk = pygame.transform.scale(yolk, (50,30))
 egg = pygame.image.load(glob.glob("images/egg.png")[0])
 egg = pygame.transform.scale(egg, (50,30))
 
+spatula = pygame.image.load(glob.glob("images/spatula.png")[0])
+spatula = pygame.transform.scale(spatula, (50,30))
+spatula = pygame.transform.flip(spatula, False, True)
+
 list_egg = []
 
 class Block(pygame.sprite.Sprite):
@@ -23,7 +27,7 @@ class Block(pygame.sprite.Sprite):
     It derives from the "Sprite" class in Pygame.
     """
 
-    def __init__(self, color, width, height):
+    def __init__(self,color, width, height):
         """ Constructor. Pass in the color of the block,
         and its x and y position. """
 
@@ -32,8 +36,10 @@ class Block(pygame.sprite.Sprite):
 
         # Create an image of the block, and fill it with a color.
         # This could also be an image loaded from the disk.
-        self.image = pygame.Surface([width, height])
-        self.color = color
+        if color == RED:
+            self.image = spatula
+        else:
+            self.image = pygame.Surface([width, height])
 
         # Fetch the rectangle object that has the dimensions of the image
         # image.
