@@ -22,7 +22,6 @@ list_egg = []
 
 class Block(pygame.sprite.Sprite):
 
-
     def __init__(self,color, width, height):
 
         super().__init__()
@@ -31,7 +30,6 @@ class Block(pygame.sprite.Sprite):
             self.image = spatula
         else:
             self.image = pygame.Surface([width, height])
-
 
         self.rect = self.image.get_rect()
         self.blink = True
@@ -49,10 +47,6 @@ class Block(pygame.sprite.Sprite):
 
     def set_image(self, img):
         self.image = img
-
-
-
-
 
 
 class Missle(pygame.sprite.Sprite):
@@ -96,7 +90,6 @@ for i in range(50):
     block.rect.x = random.randrange(screen_width)
     block.rect.y = random.randrange(screen_height)
 
-
     block_list.add(block)
     all_sprites_list.add(block)
     purple_sprites_list.add(block)
@@ -120,15 +113,9 @@ while not done:
             missile.rect.y = player.rect.y
             missile_sprites_list.add(missile)
 
-
-
-
     screen.fill(WHITE)
 
-
     pos = pygame.mouse.get_pos()
-
-
     player.rect.x = pos[0]
     player.rect.y = pos[1]
 
@@ -144,10 +131,6 @@ while not done:
 
     for blockx in missile_sprites_list:
         blockx.update()
-
-
-
-
 
     all_sprites_list.draw(screen)
     purple_sprites_list.draw(screen)
