@@ -39,7 +39,8 @@ class Blood(pygame.sprite.Sprite):
         pygame.display.update()
 
 blood_sprites = pygame.sprite.Group()
-for i in range(5):
+
+for i in range(3):
     blood = Blood()
     blood.rect.x = random.randrange(screen_width)
     random.randrange(screen_height)
@@ -51,17 +52,23 @@ class Start():
 
     def __init__(self):
         screen.fill(WHITE)
+        print('123145')
 
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONUP:
-            print("u clicked")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pass
 
     def draw(self):
         screen.fill(WHITE)
         screen.blit(the_text, (0,480))
         screen.blit(boxpic, (100,50))
+        timer_event = pygame.USEREVENT + 1
+        pygame.time.set_timer(timer_event, 1)
         for blood in blood_sprites:
+            screen.blit(blood.image, (blood.rect.x, blood.rect.y))
             blood.update()
+            pygame.display.flip()
 
 
     def update(self):
@@ -70,11 +77,11 @@ class Start():
 
 
 
-scenes = {'Start': Start()}
-scene = scenes['Start']
 
 def Boxhead():
     running = True
+    scenes = {'Start': Start()}
+    scene = scenes['Start']
     while running:
         clock.tick(60)
         for event in pygame.event.get():
@@ -83,6 +90,7 @@ def Boxhead():
             scene.handle_event(event)
             scene.update()
             scene.draw()
+
         pygame.display.flip()
 
 
