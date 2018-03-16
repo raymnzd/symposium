@@ -3,25 +3,16 @@
 import pygame
 import random
 import os
+from constants import *
 
-os.environ['SDL_VIDEO_CENTERED'] = '1'
-clock = pygame.time.Clock()
 
 pygame.init()
-screen_width = 500
-screen_height = 500
-
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
 screen = pygame.display.set_mode([screen_width, screen_height])
+
+
 my_font = pygame.font.SysFont("kalinga", 16)
 the_text = my_font.render("Created by Raymond Zhao", True, (0, 0, 0))
 text_rect = the_text.get_rect()
-
-boxpic = pygame.image.load(("images/boxhead.png"))
-bloodpic = pygame.image.load(('images/blood.png'))
-bloodpic = pygame.transform.scale(bloodpic, (50,50))
 
 
 # all_fonts = pygame.font.get_fonts()
@@ -51,13 +42,13 @@ for i in range(3):
 class Start():
 
     def __init__(self):
-        screen.fill(WHITE)
-        print('123145')
+        pass
 
     def handle_event(self, event):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pass
+                running = False
+                print('this should stop')
 
     def draw(self):
         screen.fill(WHITE)
@@ -78,21 +69,52 @@ class Start():
 
 
 
-def Boxhead():
-    running = True
-    scenes = {'Start': Start()}
-    scene = scenes['Start']
-    while running:
-        clock.tick(60)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            scene.handle_event(event)
-            scene.update()
-            scene.draw()
+class Boxhead():
 
-        pygame.display.flip()
+    def __init__(self):
+
+        self.screen = screen
+        self.alphaSurface = pygame.Surface((500, 500))  # The custom-surface of the size of the screen.
+        self.alphaSurface.fill((255, 255, 255))  # Fill it with whole white before the main-loop.
+        self.alphaSurface.set_alpha(0)  # Set alpha to 0 before the main-loop.
+        self.alph = 0  # The increment-variable.
+        self.started = False
+        self.start()
+
+
+    def start(self):
+        running = True
+        while running:
+
+            clock.tick(60)
+            self.screen.fill((0, 0, 0))  # At each main-loop fill the whole screen with black.
+            self.alph += 1  # Increment alpha by a really small value (To make it slower, try 0.01)
+            self.alphaSurface.set_alpha(self.alph)  # Set the incremented alpha-value to the custom surface.
+            self.screen.blit(self.alphaSurface, (0, 0))  # Blit it to the screen-surface (Make them separate)
+
+            self.scenes = {'Start': Start()}
+
+
+            if pygame.time.get_ticks() > 2500 and not self.started:
+                scene = self.scenes['Start']
+                scene.draw()
+                self.started = True
+                print('lol')
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+                try:
+                    scene.handle_event(event)
+                    scene.update()
+                    scene.draw()
+                except:
+                    print('scene hasn\'t been made or doesn\'t have those methods')
+
+            pygame.display.flip()
+
 
 
 if __name__ == "__main__":
-    Boxhead()
+    game = Boxhead()
