@@ -3,17 +3,10 @@
 import pygame
 import random
 import os
+from pygame import gfxdraw
 from constants import *
 
-
 pygame.init()
-screen = pygame.display.set_mode([screen_width, screen_height])
-
-
-my_font = pygame.font.SysFont("kalinga", 16)
-the_text = my_font.render("Created by Raymond Zhao", True, (0, 0, 0))
-text_rect = the_text.get_rect()
-
 
 # all_fonts = pygame.font.get_fonts()
 
@@ -42,24 +35,45 @@ for i in range(3):
 class Start():
 
     def __init__(self):
+        my_font = pygame.font.SysFont("kalinga", 16)
+        self.name = my_font.render("Created by Raymond Zhao", True, (0, 0, 0))
+        self.name_rect = self.name.get_rect()
+
+        self.start_text = my_font.render("Start", True, RED )
+        self.start_rect = self.start_text.get_rect()
+
         pass
 
     def handle_event(self, event):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                print('this should stop')
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            if pos[0] > 100:
+                print("yes")
+            print("no")
+        if event.type == pygame.QUIT:
+            running = False
+            print('this should stop')
+
 
     def draw(self):
         screen.fill(WHITE)
-        screen.blit(the_text, (0,480))
+        screen.blit(self.name, (0,480))
         screen.blit(boxpic, (100,50))
+
+        self.button = pygame.gfxdraw.aaellipse(screen, 250, 250, 50, 20, RED)
+        screen.blit(self.start_text, (230,240))
+        # pygame.draw.filled_ellipse(screen, 250, 250, 50, 20, RED)
+
         timer_event = pygame.USEREVENT + 1
         pygame.time.set_timer(timer_event, 1)
         for blood in blood_sprites:
             screen.blit(blood.image, (blood.rect.x, blood.rect.y))
             blood.update()
             pygame.display.flip()
+
+
+
+
 
 
     def update(self):
@@ -104,6 +118,7 @@ class Boxhead():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
 
                 try:
                     scene.handle_event(event)
