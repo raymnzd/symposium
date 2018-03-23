@@ -3,8 +3,11 @@
 import pygame
 import random
 import os
+import time
 from pygame import gfxdraw
 from constants import *
+
+
 
 pygame.init()
 
@@ -47,9 +50,13 @@ class Start():
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            if pos[0] > 100:
-                print("yes")
-            print("no")
+            if pos[0] >= 200 and pos[0] <= 300:
+                if pos[1] >= 230 and pos[1] <= 270:
+                    global scene
+                    scene = scenes['Play']
+
+
+
         if event.type == pygame.QUIT:
             running = False
             print('this should stop')
@@ -81,6 +88,41 @@ class Start():
 
 
 
+class Play():
+
+    def __init__(self):
+        self.x = 0
+        if scene == self:
+            self.slide()
+
+    def handle_event(self, event):
+        pass
+
+    def slide(self):
+        self.x += 1
+        screen.fill(WHITE)
+        surf = pygame.draw.rect(screen, (0, 0, 255), (self.x, 0, 500, 500))
+
+    def draw(self):
+        if scene == self:
+            self.slide()
+        pygame.draw.rect(screen, (PURPLE), (0, 0, 50, 50))
+        # x = 0
+        # if scene == self:
+        #     while surf.x < 510:
+        #         pygame.display.update()
+        #         screen.fill((255, 255, 255))
+        #         surf = pygame.draw.rect(screen, (0, 0, 255), (x, 0, 500, 500))
+        #         time.sleep(.03)
+        #         x += 1
+
+    def update(self):
+        pass
+
+
+
+scene = ""
+scenes = {'Start': Start(), 'Play': Play()}
 
 
 class Boxhead():
@@ -98,22 +140,23 @@ class Boxhead():
 
     def start(self):
         running = True
+        global scene
+        global scenes
         while running:
 
             clock.tick(60)
-            self.screen.fill((0, 0, 0))  # At each main-loop fill the whole screen with black.
-            self.alph += 1  # Increment alpha by a really small value (To make it slower, try 0.01)
-            self.alphaSurface.set_alpha(self.alph)  # Set the incremented alpha-value to the custom surface.
-            self.screen.blit(self.alphaSurface, (0, 0))  # Blit it to the screen-surface (Make them separate)
-
-            self.scenes = {'Start': Start()}
 
 
             if pygame.time.get_ticks() > 2500 and not self.started:
-                scene = self.scenes['Start']
+                scene = scenes['Start']
                 scene.draw()
                 self.started = True
                 print('lol')
+            else:
+                self.screen.fill((0, 0, 0))  # At each main-loop fill the whole screen with black.
+                self.alph += 1  # Increment alpha by a really small value (To make it slower, try 0.01)
+                self.alphaSurface.set_alpha(self.alph)  # Set the incremented alpha-value to the custom surface.
+                self.screen.blit(self.alphaSurface, (0, 0))  # Blit it to the screen-surface (Make them separate)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -125,8 +168,7 @@ class Boxhead():
                     scene.update()
                     scene.draw()
                 except:
-                    print('scene hasn\'t been made or doesn\'t have those methods')
-
+                    pass
             pygame.display.flip()
 
 
