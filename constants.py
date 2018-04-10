@@ -19,3 +19,9 @@ RED = (250, 20 , 0)
 boxpic = pygame.image.load(("images/boxhead.png"))
 bloodpic = pygame.image.load(('images/blood.png'))
 bloodpic = pygame.transform.scale(bloodpic, (50,50))
+
+player_down_pic = pygame.image.load(("images/player_down.png"))
+player_down_pic = pygame.transform.scale(player_down_pic, (25,25))
+
+player_right_pic = pygame.image.load(("images/player_right.png"))
+player_right_pic = pygame.transform.scale(player_down_pic, (25,25))

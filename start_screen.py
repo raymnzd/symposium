@@ -2,6 +2,8 @@
 
 import pygame
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 import os
 import time
 from pygame import gfxdraw
@@ -33,6 +35,27 @@ for i in range(3):
     random.randrange(screen_height)
     blood_sprites.add(blood)
     pygame.display.flip()
+
+
+
+
+
+class Player(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+        self.image = player_down_pic
+        self.rect = self.image.get_rect()
+        self.rect.x = 300
+        self.rect.y = 300
+
+    def move(self, dir):
+        if dir == 'a':
+            self.rect.x -= 1
+        if dir == 'd':
+            self.rect.x += 1
+
+
 
 
 class Start():
@@ -92,11 +115,18 @@ class Play():
 
     def __init__(self):
         self.x = 0
+        self.clicked = False
         if scene == self:
             self.slide()
 
+        self.player = Player()
+
     def handle_event(self, event):
-        pass
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_a]:
+            self.player.move('a')
+        if pressed[pygame.K_d]:
+            self.player.move('d')
 
     def slide(self):
         self.x += 1
@@ -106,8 +136,8 @@ class Play():
     def draw(self):
         if scene == self:
             self.slide()
-        pygame.draw.rect(screen, (PURPLE), (0, 0, 50, 50))
-        # x = 0
+        # pygame.draw.rect(screen, (PURPLE), (0, 0, 50, 50))
+        x = 0
         # if scene == self:
         #     while surf.x < 510:
         #         pygame.display.update()
@@ -115,6 +145,9 @@ class Play():
         #         surf = pygame.draw.rect(screen, (0, 0, 255), (x, 0, 500, 500))
         #         time.sleep(.03)
         #         x += 1
+        screen.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
+        screen.fil(WHITE)
+
 
     def update(self):
         pass
