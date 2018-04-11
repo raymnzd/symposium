@@ -72,13 +72,14 @@ class Player(pygame.sprite.Sprite):
             self.rect.x += 1
 
 
+my_font = pygame.font.SysFont("kalinga", 16)
 class Start():
 
     def __init__(self):
-        my_font = pygame.font.SysFont("kalinga", 16)
+        global my_font
+
         self.name = my_font.render("Created by Raymond Zhao", True, (0, 0, 0))
         self.name_rect = self.name.get_rect()
-
         self.start_text = my_font.render("Start", True, RED )
         self.start_rect = self.start_text.get_rect()
 
@@ -178,6 +179,7 @@ class Play():
         surf = pygame.draw.rect(screen, (0, 0, 255), (self.x, 0, 500, 500))
 
     def draw(self):
+        global my_font
         if scene == self:
             self.slide()
         # pygame.draw.rect(screen, (PURPLE), (0, 0, 50, 50))
@@ -190,6 +192,9 @@ class Play():
         #         time.sleep(.03)
         #         x += 1
         screen.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
+        fight = my_font.render("fight", True, (0, 0, 0))
+        screen.blit(fight, (50,50))
+        # print(fight.get_rect().rect.x)
         screen.fil(WHITE)
 
 

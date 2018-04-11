@@ -16,6 +16,7 @@ BLACK = (0, 0, 0)
 PURPLE = (255, 0, 255)
 RED = (250, 20 , 0)
 
+
 boxpic = pygame.image.load(("images/boxhead.png"))
 bloodpic = pygame.image.load(('images/blood.png'))
 bloodpic = pygame.transform.scale(bloodpic, (50,50))
