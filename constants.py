@@ -25,7 +25,7 @@ player_up_pic = pygame.image.load(("images/player_up.png"))
 player_up_pic = pygame.transform.scale(player_up_pic, (25,25))
 
 '''                                          
-            PLAYER PICTURES
+            PLAYER PICTURES!
 '''
 
 player_upleft_pic = pygame.image.load(("images/player_upleft.png"))
