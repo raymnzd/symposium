@@ -54,8 +54,22 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= 1
         if dir == 'd':
             self.rect.x += 1
-
-
+        if dir == 's':
+            self.rect.y += 1
+        if dir == 'w':
+            self.rect.y -= 1
+        if dir == 'wa':
+            self.rect.y -= 1
+            self.rect.x -= 1
+        if dir == 'wd':
+            self.rect.y -= 1
+            self.rect.x += 1
+        if dir == 'sa':
+            self.rect.y += 1
+            self.rect.x -= 1
+        if dir == 'sd':
+            self.rect.y += 1
+            self.rect.x += 1
 
 
 class Start():
@@ -123,10 +137,40 @@ class Play():
 
     def handle_event(self, event):
         pressed = pygame.key.get_pressed()
-        if pressed[pygame.K_a]:
+
+        if pressed[pygame.K_a] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
             self.player.move('a')
-        if pressed[pygame.K_d]:
+            self.player.image = player_left_pic
+
+        if pressed[pygame.K_w]:
+            if pressed[pygame.K_a]:
+                self.player.move('wa')
+                self.player.image = player_upleft_pic
+            elif pressed[pygame.K_d]:
+                self.player.move('wd')
+                self.player.image = player_upright_pic
+            else:
+                self.player.move('w')
+                self.player.image = player_up_pic
+
+        if pressed[pygame.K_s]:
+            if pressed[pygame.K_a]:
+                self.player.move('sa')
+                self.player.image = player_downleft_pic
+            elif pressed[pygame.K_d]:
+                self.player.move('sd')
+                self.player.image = player_downright_pic
+            else:
+                self.player.move('s')
+                self.player.image = player_down_pic
+
+        if pressed[pygame.K_d] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
             self.player.move('d')
+            self.player.image = player_right_pic
+
+
+
+
 
     def slide(self):
         self.x += 1
