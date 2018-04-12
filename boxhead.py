@@ -46,8 +46,9 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.image = player_down_pic
         self.rect = self.image.get_rect()
-        self.rect.x = 300
-        self.rect.y = 300
+        self.rect.x = 240
+        self.rect.y = 220
+        self.health = 100
 
     def move(self, dir):
         if dir == 'a':
@@ -70,6 +71,17 @@ class Player(pygame.sprite.Sprite):
         if dir == 'sd':
             self.rect.y += 1
             self.rect.x += 1
+
+    def draw_health(self):
+        r = min(255, 255 - (255 * ((self.health - (100 - self.health)) / 100)))
+        g = min(255, 255 * (self.health / (100 / 2)))
+        color = (r, g, 0)
+        width = int(500 * self.health / 100)
+        self.health_bar = (0, 490, width, 10)
+        if self.health <= 100:
+            pygame.draw.rect(screen, color, self.health_bar)
+
+
 
 
 my_font = pygame.font.SysFont("kalinga", 16)
@@ -117,10 +129,6 @@ class Start():
             pygame.display.flip()
 
 
-
-
-
-
     def update(self):
         pass
 
@@ -135,6 +143,8 @@ class Play():
             self.slide()
 
         self.player = Player()
+        self.tempx = 50
+        self.tempy = 50
 
     def handle_event(self, event):
         pressed = pygame.key.get_pressed()
@@ -173,10 +183,15 @@ class Play():
 
 
 
+
     def slide(self):
         self.x += 1
         screen.fill(WHITE)
         surf = pygame.draw.rect(screen, (0, 0, 255), (self.x, 0, 500, 500))
+        fight = my_font.render("fight", True, (0, 0, 0))
+
+        screen.blit(fight, (self.tempx, self.tempy))
+        self.tempx += 1
 
     def draw(self):
         global my_font
@@ -192,10 +207,10 @@ class Play():
         #         time.sleep(.03)
         #         x += 1
         screen.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
-        fight = my_font.render("fight", True, (0, 0, 0))
-        screen.blit(fight, (50,50))
-        # print(fight.get_rect().rect.x)
+        self.player.draw_health()
+        self.player.health -= 5
         screen.fil(WHITE)
+        pygame.display.flip()
 
 
     def update(self):
@@ -227,7 +242,6 @@ class Boxhead():
         while running:
 
             clock.tick(60)
-
 
             if pygame.time.get_ticks() > 2500 and not self.started:
                 scene = scenes['Start']
