@@ -17,6 +17,18 @@ PURPLE = (255, 0, 255)
 RED = (250, 20 , 0)
 
 
+move_map = {'a': (-1, 0),
+            'd': (1, 0),
+            's': (0, 1),
+            'w': (0, -1),
+            'wa': (-1, -1),
+            'wd': (1, -1),
+            'sa': (-1, 1),
+            'sd': (1, 1)}
+
+
+
+
 boxpic = pygame.image.load(("images/boxhead.png"))
 bloodpic = pygame.image.load(('images/blood.png'))
 bloodpic = pygame.transform.scale(bloodpic, (50,50))
@@ -49,3 +61,11 @@ player_left_pic = pygame.transform.scale(player_left_pic, (25,25))
 
 player_right_pic = pygame.image.load(("images/player_right.png"))
 player_right_pic = pygame.transform.scale(player_right_pic, (25,25))
+
+
+
+
+
+
+
+

@@ -1,10 +1,11 @@
-#might be my start screen
+#START THE GAME HERE
 
 import pygame
 import random
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import threading
 import time
 from pygame import gfxdraw
 from constants import *
@@ -51,26 +52,9 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
 
     def move(self, dir):
-        if dir == 'a':
-            self.rect.x -= 1
-        if dir == 'd':
-            self.rect.x += 1
-        if dir == 's':
-            self.rect.y += 1
-        if dir == 'w':
-            self.rect.y -= 1
-        if dir == 'wa':
-            self.rect.y -= 1
-            self.rect.x -= 1
-        if dir == 'wd':
-            self.rect.y -= 1
-            self.rect.x += 1
-        if dir == 'sa':
-            self.rect.y += 1
-            self.rect.x -= 1
-        if dir == 'sd':
-            self.rect.y += 1
-            self.rect.x += 1
+        global move_map
+        self.rect.x += move_map[dir][0]
+        self.rect.y += move_map[dir][1]
 
     def draw_health(self):
         r = min(255, 255 - (255 * ((self.health - (100 - self.health)) / 100)))
@@ -133,7 +117,6 @@ class Start():
         pass
 
 
-
 class Play():
 
     def __init__(self):
@@ -180,6 +163,12 @@ class Play():
             self.player.image = player_right_pic
 
 
+        if pressed[pygame.K_SPACE]:
+            self.player.health -= 1
+            self.draw()
+            threading.Event.wait(1000)
+
+
 
 
 
@@ -208,7 +197,6 @@ class Play():
         #         x += 1
         screen.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
         self.player.draw_health()
-        self.player.health -= 5
         screen.fil(WHITE)
         pygame.display.flip()
 
