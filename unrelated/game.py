@@ -9,7 +9,7 @@ def main():
     surface_sz = 480   # Desired physical surface size, in pixels.
     # Create surface of (width, height), and its window.
     main_surface = pygame.display.set_mode((surface_sz, surface_sz))
-    yolk = pygame.image.load(glob.glob("images/yolk.png")[0])
+    yolk = pygame.image.load("yolk.png")
     yolk = pygame.transform.scale(yolk, (50,30))
     rect = yolk.get_rect()
 

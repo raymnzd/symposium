@@ -14,7 +14,6 @@ from constants import *
 
 
 pygame.init()
-
 # all_fonts = pygame.font.get_fonts()
 
 
@@ -38,7 +37,6 @@ for i in range(3):
     random.randrange(screen_height)
     blood_sprites.add(blood)
     pygame.display.flip()
-
 
 
 
@@ -67,7 +65,23 @@ class Player(pygame.sprite.Sprite):
         if self.health <= 100:
             pygame.draw.rect(screen, color, self.health_bar)
 
+p = Player()
 
+class Zombie(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+        self.image = zombie_up_pic
+        self.rect = self.image.get_rect()
+        self.rect.x = 100
+        self.rect.y = 100
+
+    def update(self):
+        # print(p.rect.x, p.rect.y)
+        self.rect.move(p.rect.x, p.rect.y)
+
+        # print(self.rect.x, self.rect.y)
+        # pygame.display.update()
 
 
 my_font = pygame.font.SysFont("kalinga", 16)
@@ -122,14 +136,16 @@ class Start():
 class Play():
 
     def __init__(self):
+        global p
         self.x = 0
         self.clicked = False
         if scene == self:
             self.slide()
 
-        self.player = Player()
+        self.player = p
         self.tempx = 50
         self.tempy = 50
+        self.zombies = Zombie()
 
     def handle_event(self, event):
         pressed = pygame.key.get_pressed()
@@ -198,26 +214,14 @@ class Play():
         #         surf = pygame.draw.rect(screen, (0, 0, 255), (x, 0, 500, 500))
         #         time.sleep(.03)
         #         x += 1
+        self.zombies.update()
+        screen.blit(self.zombies.image, (self.zombies.rect.x,self.zombies.rect.y))
         screen.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
         self.player.draw_health()
-
-        # mousex, mousey = pygame.mouse.get_pos()
-        # degrees = self.getAngle(self.player.rect.x, self.player.rect.y, mousex, mousey)
-
-        # rotate a copy of the cannon image and draw it
-        # rotatedSurf = pygame.transform.rotate(self.player.image, degrees)
-        # screen.blit(rotatedSurf, (self.player.rect.x, self.player.rect.y))
         screen.fil(WHITE)
         pygame.display.flip()
 
-    def getAngle(self,x1, y1, x2, y2):
-        # Return value is 0 for right, 90 for up, 180 for left, and 270 for down (and all values between 0 and 360)
-        rise = y1 - y2
-        run = x1 - x2
-        angle = math.atan2(run, rise)  # get the angle in radians
-        angle = angle * (180 / math.pi)  # convert to degrees
-        angle = (angle + 90) % 360  # adjust for a right-facing sprite
-        return angle
+
 
     def update(self):
         pass
@@ -272,7 +276,6 @@ class Boxhead():
                 except:
                     pass
             pygame.display.flip()
-
 
 
 if __name__ == "__main__":
