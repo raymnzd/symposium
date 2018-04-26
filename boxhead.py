@@ -66,6 +66,7 @@ class Player(pygame.sprite.Sprite):
             pygame.draw.rect(screen, color, self.health_bar)
 
 p = Player()
+print("ASDASDSAD")
 
 class Zombie(pygame.sprite.Sprite):
 
@@ -77,8 +78,7 @@ class Zombie(pygame.sprite.Sprite):
         self.rect.y = 100
 
     def update(self):
-        # print(p.rect.x, p.rect.y)
-        self.rect.move(p.rect.x, p.rect.y)
+        self.rect = self.rect.move(1,1)
 
         # print(self.rect.x, self.rect.y)
         # pygame.display.update()
