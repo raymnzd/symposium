@@ -91,7 +91,13 @@ def start_screen():
 
 def game_loop():
     while True:
-        print("l")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        screen.fill(PURPLE)
+        pygame.display.flip()
 
 start_screen()
 game_loop()
