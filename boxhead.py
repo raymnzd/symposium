@@ -113,7 +113,7 @@ class Start():
 
 
     def draw(self):
-        screen.fill(WHITE)
+        screen.fill(PURPLE)
         screen.blit(self.name, (0,480))
         screen.blit(boxpic, (100,50))
 
