@@ -2,6 +2,10 @@ import pygame
 import os
 import random
 import blood
+import player
+import zombie
+import missile
+from zombie import Zombie
 from sprites import *
 from pygame import gfxdraw
 
@@ -18,9 +22,17 @@ BLACK = (0, 0, 0)
 PURPLE = (255, 0, 255)
 RED = (250, 20 , 0)
 
+clock = pygame.time.Clock()
+
+zombies = pygame.sprite.Group()
+missiles = pygame.sprite.Group()
+
 
 pygame.init()
 my_font = pygame.font.SysFont("kalinga", 16)
+
+p = player.Player()
+
 
 def start_screen():
     global blood
@@ -90,14 +102,98 @@ def start_screen():
 
 
 def game_loop():
+    done = False
+    blood_spots = []
+    can_shoot = True
     while True:
+        clock.tick(60)
+        screen.fill(WHITE)
+
+        if not done:
+            create_zombies()
+            done = True
+
+        for zombs in zombies:
+            zombs.move_towards_player(p)
+            screen.blit(zombs.image, (zombs.rect.x, zombs.rect.y))
+            if zombs.rect.colliderect(p.rect):
+                blood_spots.append((zombs.rect.x,zombs.rect.y))
+                p.get_hit()
+                zombs.kill()
+
+
+                print('you got hit')
+
+        for spots in blood_spots:
+            screen.blit(bloodpic, (spots[0],spots[1]))
+
+        for m in missiles:
+            m.update()
+            screen.blit(m.image, (m.rect.x, m.rect.y))
+
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
-        screen.fill(PURPLE)
+        screen.blit(p.image, (p.rect.x,p.rect.y))
+        pressed = pygame.key.get_pressed()
+
+        if pressed[pygame.K_a] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
+            p.move('a')
+            p.image = player_left_pic
+
+        if pressed[pygame.K_w]:
+            if pressed[pygame.K_a]:
+                p.move('wa')
+                p.image = player_upleft_pic
+            elif pressed[pygame.K_d]:
+                p.move('wd')
+                p.image = player_upright_pic
+            else:
+                p.move('w')
+                p.image = player_up_pic
+
+        if pressed[pygame.K_s]:
+            if pressed[pygame.K_a]:
+                p.move('sa')
+                p.image = player_downleft_pic
+            elif pressed[pygame.K_d]:
+                p.move('sd')
+                p.image = player_downright_pic
+            else:
+                p.move('s')
+                p.image = player_down_pic
+
+        if pressed[pygame.K_d] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
+            p.move('d')
+            p.image = player_right_pic
+
+        t = clock.get_time()
+        if t >= 2:
+            can_shoot = True
+
+
+        if pressed[pygame.K_SPACE] and can_shoot:
+            clock.tick()
+            can_shoot = False
+
+            m = missile.Missile(p)
+            missiles.add(m)
+
+        p.draw_health(screen)
         pygame.display.flip()
+
+def create_zombies():
+    for i in range(11):
+        z = zombie.Zombie()
+        z.rect.x = random.randint(0,500)
+        z.rect.y = random.randint(0,500)
+        zombies.add(z)
+
+
+
 
 start_screen()
 game_loop()
