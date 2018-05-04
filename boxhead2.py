@@ -130,6 +130,11 @@ def game_loop():
         for m in missiles:
             m.update()
             screen.blit(m.image, (m.rect.x, m.rect.y))
+            for zombs in zombies:
+                if zombs.rect.colliderect(m.rect):
+                    blood_spots.append((zombs.rect.x, zombs.rect.y))
+                    zombs.kill()
+                    m.kill()
 
 
         for event in pygame.event.get():
@@ -143,44 +148,46 @@ def game_loop():
         if pressed[pygame.K_a] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
             p.move('a')
             p.image = player_left_pic
+            p.dir = 'a'
 
         if pressed[pygame.K_w]:
             if pressed[pygame.K_a]:
                 p.move('wa')
                 p.image = player_upleft_pic
+                p.dir = 'wa'
             elif pressed[pygame.K_d]:
                 p.move('wd')
                 p.image = player_upright_pic
+                p.dir = 'wd'
             else:
                 p.move('w')
                 p.image = player_up_pic
+                p.dir = 'w'
 
         if pressed[pygame.K_s]:
             if pressed[pygame.K_a]:
                 p.move('sa')
                 p.image = player_downleft_pic
+                p.dir = 'sa'
             elif pressed[pygame.K_d]:
                 p.move('sd')
                 p.image = player_downright_pic
+                p.dir = 'sd'
             else:
                 p.move('s')
                 p.image = player_down_pic
+                p.dir = 's'
 
         if pressed[pygame.K_d] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
             p.move('d')
             p.image = player_right_pic
-
-        t = clock.get_time()
-        if t >= 2:
-            can_shoot = True
+            p.dir = 'd'
 
 
-        if pressed[pygame.K_SPACE] and can_shoot:
-            clock.tick()
-            can_shoot = False
-
+        if pressed[pygame.K_SPACE]:
             m = missile.Missile(p)
             missiles.add(m)
+            print(len(missiles))
 
         p.draw_health(screen)
         pygame.display.flip()

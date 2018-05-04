@@ -1,4 +1,5 @@
 import pygame
+from movemap import move_map
 
 class Missile(pygame.sprite.Sprite):
 
@@ -9,7 +10,12 @@ class Missile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = player.rect.x + 4
         self.rect.y = player.rect.y + 4
+        self.dir = player.dir
 
     def update(self):
-        self.rect.x += 5
-        self.rect.y += 0
+        self.rect.x += move_map[self.dir][0] * 5
+        self.rect.y += move_map[self.dir][1] * 5
+
+
+
+

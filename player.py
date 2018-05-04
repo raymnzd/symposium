@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = 220
         self.speed = 3
         self.health = 100
+        self.dir = 's'
 
     def move(self, dir):
 
