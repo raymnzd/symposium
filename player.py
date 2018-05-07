@@ -16,8 +16,14 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, dir):
 
-        self.rect.x += move_map[dir][0] * self.speed
-        self.rect.y += move_map[dir][1] * self.speed
+        if self.rect.x + move_map[dir][0] * self.speed > 480 or self.rect.x + move_map[dir][0] * self.speed < 0:
+            pass
+        else:
+            self.rect.x += move_map[dir][0] * self.speed
+        if self.rect.y + move_map[dir][1] * self.speed < 0 or self.rect.y + move_map[dir][1] * self.speed > 480:
+            pass
+        else:
+            self.rect.y += move_map[dir][1] * self.speed
 
     def draw_health(self,screen):
         r = min(255, 255 - (255 * ((self.health - (100 - self.health)) / 100)))
