@@ -5,7 +5,9 @@ import blood
 import player
 import zombie
 import missile
+import devil
 from zombie import Zombie
+from devil import Devil
 from sprites import *
 from pygame import gfxdraw
 
@@ -23,8 +25,11 @@ PURPLE = (255, 0, 255)
 RED = (250, 20 , 0)
 
 clock = pygame.time.Clock()
+shot_clock = pygame.time.Clock()
+
 
 zombies = pygame.sprite.Group()
+devils = pygame.sprite.Group()
 missiles = pygame.sprite.Group()
 
 
@@ -105,12 +110,14 @@ def game_loop():
     done = False
     blood_spots = []
     can_shoot = True
+    last_shot = 1000
     while True:
         clock.tick(60)
         screen.fill(WHITE)
 
         if not done:
             create_zombies()
+            create_devils()
             done = True
 
         for zombs in zombies:
@@ -122,7 +129,26 @@ def game_loop():
                 zombs.kill()
 
 
+
                 print('you got hit')
+
+
+        for devs in devils:
+            devs.move_towards_player(p)
+            screen.blit(devs.image, (devs.rect.x, devs.rect.y))
+            if devs.rect.colliderect(p.rect):
+                blood_spots.append((devs.rect.x,devs.rect.y))
+                p.get_hit()
+                devs.kill()
+                print('you got hit')
+
+            if pygame.time.get_ticks() - devs.last_shot >= 2000:
+                chance = random.random()
+                if chance < .05:
+                    devs.last_shot = pygame.time.get_ticks()
+                    m = missile.Missile(p, devs)
+                    missiles.add(m)
+
 
         for spots in blood_spots:
             screen.blit(bloodpic, (spots[0],spots[1]))
@@ -131,9 +157,20 @@ def game_loop():
             m.update()
             screen.blit(m.image, (m.rect.x, m.rect.y))
             for zombs in zombies:
-                if zombs.rect.colliderect(m.rect):
-                    blood_spots.append((zombs.rect.x, zombs.rect.y))
-                    zombs.kill()
+                if m.target == "enemy":
+                    if zombs.rect.colliderect(m.rect):
+                        blood_spots.append((zombs.rect.x, zombs.rect.y))
+                        zombs.kill()
+                        m.kill()
+            for devs in devils:
+                if m.target == "enemy":
+                    if devs.rect.colliderect(m.rect):
+                        blood_spots.append((devs.rect.x, devs.rect.y))
+                        devs.kill()
+                        m.kill()
+            if p.rect.colliderect(m.rect):
+                if m.target == "player":
+                    p.get_hit()
                     m.kill()
 
 
@@ -185,9 +222,11 @@ def game_loop():
 
 
         if pressed[pygame.K_SPACE]:
-            m = missile.Missile(p)
-            missiles.add(m)
-            print(len(missiles))
+            if pygame.time.get_ticks() - last_shot >= 200:
+                last_shot = pygame.time.get_ticks()
+                shot_clock.tick()
+                m = missile.Missile(p,'player')
+                missiles.add(m)
 
         p.draw_health(screen)
         pygame.display.flip()
@@ -198,6 +237,13 @@ def create_zombies():
         z.rect.x = random.randint(0,500)
         z.rect.y = random.randint(0,500)
         zombies.add(z)
+
+def create_devils():
+    for i in range(6):
+        d = devil.Devil()
+        d.rect.x = random.randint(0,500)
+        d.rect.y = random.randint(0,500)
+        devils.add(d)
 
 
 
