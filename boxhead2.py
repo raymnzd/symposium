@@ -32,6 +32,10 @@ zombies = pygame.sprite.Group()
 devils = pygame.sprite.Group()
 missiles = pygame.sprite.Group()
 
+bg = pygame.image.load("images/background.jpg")
+bg = pygame.transform.scale(bg, (500,500))
+
+
 
 pygame.init()
 my_font = pygame.font.SysFont("kalinga", 16)
@@ -111,13 +115,16 @@ def game_loop():
     blood_spots = []
     can_shoot = True
     last_shot = 1000
-    while True:
-        clock.tick(60)
+    alive = True
+    temp_clock = []
+    level = 0
+    while alive:
         screen.fill(WHITE)
+        screen.blit(bg,(0,0))
 
         if not done:
-            create_zombies()
-            create_devils()
+            create_zombies(6)
+            create_devils(6)
             done = True
 
         for zombs in zombies:
@@ -228,23 +235,42 @@ def game_loop():
                 m = missile.Missile(p,'player')
                 missiles.add(m)
 
-        p.draw_health(screen)
-        pygame.display.flip()
+        if p.get_health() > 0:
+            p.draw_health(screen)
+        else:
+            # alive = False
+            print('Game Over')
 
-def create_zombies():
-    for i in range(11):
+
+        if len(zombies) + len(devils) == 0:
+
+            try:
+                if pygame.time.get_ticks() - temp_clock[level] >= 5000:
+                    print("going to create zombies")
+                    create_devils(6)
+                    create_zombies(6)
+                    level += 1
+            except IndexError:
+                temp_clock.append(pygame.time.get_ticks())
+
+
+        pygame.display.flip()
+        clock.tick(60)
+
+
+def create_zombies(n):
+    for i in range(n):
         z = zombie.Zombie()
         z.rect.x = random.randint(0,500)
         z.rect.y = random.randint(0,500)
         zombies.add(z)
 
-def create_devils():
-    for i in range(6):
+def create_devils(n):
+    for i in range(n):
         d = devil.Devil()
         d.rect.x = random.randint(0,500)
         d.rect.y = random.randint(0,500)
         devils.add(d)
-
 
 
 

@@ -36,3 +36,6 @@ class Player(pygame.sprite.Sprite):
 
     def get_hit(self):
         self.health -= 5
+
+    def get_health(self):
+        return self.health
