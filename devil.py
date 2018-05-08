@@ -16,6 +16,7 @@ class Devil(pygame.sprite.Sprite):
         self.changey = 0
 
         self.last_shot = 0
+        self.clock = pygame.time.Clock()
 
 
     def update(self):
@@ -37,20 +38,33 @@ class Devil(pygame.sprite.Sprite):
         elif self.rect.y > player.rect.y:
             self.rect.y -= self.speed
             self.changey = -1
-        self.change_pic()
+        self.change_pic(player)
 
-    def change_pic(self):
+    def change_pic(self, player):
         if self.changex == 1:
             if self.changey == 1:
-                self.image = devil_downright_pic
-            elif self.changey == -1:
-                self.image = devil_upright_pic
+                if abs(self.rect.x - player.rect.x) <= 5:
+                    self.image = devil_down_pic
+                else:
+                    self.image = devil_downright_pic
             else:
-                self.image = devil_right_pic
+                if self.changey == -1:
+                    if abs(player.rect.y - self.rect.y) > 50:
+                        self.image = devil_upright_pic
+                    else:
+                        self.image = devil_right_pic
         elif self.changex == -1:
             if self.changey == 1:
-                self.image = devil_downleft_pic
-            elif self.changey == -1:
-                self.image = devil_upleft_pic
+                if abs(self.rect.x - player.rect.x) <= 5:
+                    self.image = devil_down_pic
+                else:
+                    self.image = devil_downleft_pic
             else:
-                self.image = devil_left_pic
+                if self.changey == -1:
+                    if abs(player.rect.x - self.rect.x) <= 5:
+                        self.image = devil_up_pic
+                    else:
+                        if abs(player.rect.y - self.rect.y) > 50:
+                            self.image = devil_upleft_pic
+                        else:
+                            self.image = devil_left_pic

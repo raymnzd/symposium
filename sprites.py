@@ -1,7 +1,14 @@
 import pygame
 
 
+
+
 boxpic = pygame.image.load(("images/boxhead.png"))
+
+"""
+            DEATH ANIMATION!
+"""
+
 bloodpic = pygame.image.load(('images/blood.png'))
 bloodpic = pygame.transform.scale(bloodpic, (50,50))
 
