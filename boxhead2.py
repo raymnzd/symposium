@@ -35,7 +35,7 @@ missiles = pygame.sprite.Group()
 bg = pygame.image.load("images/background.jpg")
 bg = pygame.transform.scale(bg, (500,500))
 
-
+nice = ["Nice!", "Wow!", "Boom!"]
 
 pygame.init()
 my_font = pygame.font.SysFont("kalinga", 16)
@@ -46,6 +46,7 @@ p = player.Player()
 def start_screen():
     global blood
     global my_font
+    print("adasodmsaodsmaod")
     fade = False
     start = True
     alph = 0
@@ -54,8 +55,9 @@ def start_screen():
     alphaSurface.set_alpha(0)
     blood_sprites = pygame.sprite.Group()
 
+    from blood import Blood
     for i in range(3):
-        bld = blood.Blood()
+        bld = Blood()
         bld.rect.x = random.randrange(screen_width)
         random.randrange(screen_height)
         blood_sprites.add(bld)
@@ -87,6 +89,7 @@ def start_screen():
 
     while start:
         screen.fill(WHITE)
+        screen.blit(bg,(0,0))
         screen.blit(name, (0,480))
         screen.blit(start_text, (230,240))
         screen.blit(boxpic, (100,50))
@@ -101,6 +104,7 @@ def start_screen():
                 if pos[0] >= 200 and pos[0] <= 300:
                     if pos[1] >= 230 and pos[1] <= 270:
                         start = False
+                        game_loop()
 
         for blood in blood_sprites:
             screen.blit(blood.image, (blood.rect.x, blood.rect.y))
@@ -110,21 +114,28 @@ def start_screen():
         pygame.display.flip()
 
 
+
+
+
+
+
 def game_loop():
+    p.set_health(100)
     done = False
     blood_spots = []
     can_shoot = True
     last_shot = 1000
     alive = True
     temp_clock = []
-    level = 0
+    level = 1
+    word = []
     while alive:
         screen.fill(WHITE)
         screen.blit(bg,(0,0))
 
         if not done:
-            create_zombies(6)
-            create_devils(6)
+            create_zombies(3)
+            create_devils(3)
             done = True
 
         for zombs in zombies:
@@ -159,6 +170,10 @@ def game_loop():
 
         for spots in blood_spots:
             screen.blit(bloodpic, (spots[0],spots[1]))
+
+
+
+            level_clear_message(random.choice(nice), spots[0], spots[1] - 30)
 
         for m in missiles:
             m.update()
@@ -238,17 +253,20 @@ def game_loop():
         if p.get_health() > 0:
             p.draw_health(screen)
         else:
-            # alive = False
+            alive = False
+            start_screen()
             print('Game Over')
 
 
         if len(zombies) + len(devils) == 0:
-
+            level_clear_message(level, 170, 50)
             try:
                 if pygame.time.get_ticks() - temp_clock[level] >= 5000:
                     print("going to create zombies")
-                    create_devils(6)
-                    create_zombies(6)
+                    blood_spots.clear()
+                    missiles.empty()
+                    create_devils(1)
+                    create_zombies(1)
                     level += 1
             except IndexError:
                 temp_clock.append(pygame.time.get_ticks())
@@ -256,6 +274,17 @@ def game_loop():
 
         pygame.display.flip()
         clock.tick(60)
+
+
+def level_clear_message(level, x , y):
+    global my_font
+    if type(level) is int:
+        message = my_font.render("Level " + str(level) + " has been cleared! ", True, RED)
+    else:
+        message = my_font.render(level, True, PURPLE)
+    screen.blit(message,(x,y))
+
+
 
 
 def create_zombies(n):
@@ -274,5 +303,6 @@ def create_devils(n):
 
 
 
+
+
 start_screen()
-game_loop()

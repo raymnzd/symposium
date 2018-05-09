@@ -39,3 +39,6 @@ class Player(pygame.sprite.Sprite):
 
     def get_health(self):
         return self.health
+
+    def set_health(self, health):
+        self.health = health
