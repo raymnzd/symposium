@@ -170,10 +170,7 @@ def game_loop():
 
         for spots in blood_spots:
             screen.blit(bloodpic, (spots[0],spots[1]))
-
-
-
-            level_clear_message(random.choice(nice), spots[0], spots[1] - 30)
+            level_clear_message("Nice", spots[0], spots[1] - 30)
 
         for m in missiles:
             m.update()
