@@ -19,6 +19,7 @@ os.environ['SDL_VIDEO_CENTERED'] = '1'
 screen_width = 500
 screen_height = 500
 screen = pygame.display.set_mode([screen_width, screen_height])
+pygame.display.set_caption("Boxhead by Raymond Zhao")
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 PURPLE = (255, 0, 255)
@@ -46,7 +47,6 @@ p = player.Player()
 def start_screen():
     global blood
     global my_font
-    print("adasodmsaodsmaod")
     fade = False
     start = True
     alph = 0
@@ -241,7 +241,7 @@ def game_loop():
 
 
         if pressed[pygame.K_SPACE]:
-            if pygame.time.get_ticks() - last_shot >= 200:
+            if pygame.time.get_ticks() - last_shot >= 400:
                 last_shot = pygame.time.get_ticks()
                 shot_clock.tick()
                 m = missile.Missile(p,'player')
@@ -262,9 +262,13 @@ def game_loop():
                     print("going to create zombies")
                     blood_spots.clear()
                     missiles.empty()
-                    create_devils(1)
-                    create_zombies(1)
+                    create_devils(level * 2)
+                    create_zombies(level * 2)
                     level += 1
+                    if p.get_health() + 10 < 100:
+                        p.set_health(p.get_health() + 10)
+                    else:
+                        p.set_health(100)
             except IndexError:
                 temp_clock.append(pygame.time.get_ticks())
 

@@ -12,8 +12,8 @@ class Missile(pygame.sprite.Sprite):
             self.image = pygame.Surface((5,2))
             self.image.fill((0,0,255))
             self.rect = self.image.get_rect()
-            self.rect.x = player.rect.x + 4
-            self.rect.y = player.rect.y + 4
+            self.rect.x = player.rect.x + 8
+            self.rect.y = player.rect.y + 8
             self.target = "enemy"
         else:
             self.image = pygame.Surface((3,3))
@@ -32,8 +32,8 @@ class Missile(pygame.sprite.Sprite):
     def update(self):
 
         if self.user == "player":
-            self.rect.x += move_map[self.dir][0] * 2
-            self.rect.y += move_map[self.dir][1] * 2
+            self.rect.x += move_map[self.dir][0] * 4
+            self.rect.y += move_map[self.dir][1] * 4
         else:
             self.rect.x += move_map[self.dir][self.randx] * 2
             self.rect.y += move_map[self.dir][self.randy] * 2
