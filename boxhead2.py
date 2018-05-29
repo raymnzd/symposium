@@ -72,7 +72,6 @@ def start_screen():
                 quit()
         if pygame.time.get_ticks() > 1000 and not fade:
             fade = True
-            print('go')
         else:
             screen.fill((0, 0, 0))  # At each main-loop fill the whole screen with black.
             alph += 1  # Increment alpha by a really small value (To make it slower, try 0.01)
@@ -86,41 +85,54 @@ def start_screen():
 
     name = my_font.render("Created by Raymond Zhao", True, (0, 0, 0))
     start_text = my_font.render("Start", True, RED)
+    score_text = my_font.render("Top Score", True, RED)
+
 
     while start:
         screen.fill(WHITE)
         screen.blit(bg,(0,0))
-        screen.blit(name, (0,480))
-        screen.blit(start_text, (230,240))
-        screen.blit(boxpic, (100,50))
+        screen.blit(name, (0, 480))
+        screen.blit(start_text, (230, 240))
+        screen.blit(score_text, (205, 290))
+        screen.blit(boxpic, (100, 50))
+
+        #circle outline for buttons
         button = pygame.gfxdraw.aaellipse(screen, 250, 250, 50, 20, RED)
+        sButton = pygame.gfxdraw.aaellipse(screen, 250, 300, 50, 20, RED)
+
+        pos = pygame.mouse.get_pos()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type == pygame.MOUSEBUTTONUP:
-                pos = pygame.mouse.get_pos()
                 if pos[0] >= 200 and pos[0] <= 300:
                     if pos[1] >= 230 and pos[1] <= 270:
                         start = False
                         game_loop()
-
+                    if pos[1] >= 276 and pos[1] <= 320:
+                        start = False
+                        show_scores()
         for blood in blood_sprites:
             screen.blit(blood.image, (blood.rect.x, blood.rect.y))
             blood.update()
             pygame.display.flip()
-
         pygame.display.flip()
 
 
 
-
-
+def show_scores():
+    try:
+        with open("scores.txt") as f:
+            print(f.read())
+    except IOError:
+        pass
+    start_screen()
 
 
 def game_loop():
-    p.set_health(100)
+    p.set_health(10)
     done = False
     blood_spots = []
     can_shoot = True
@@ -128,14 +140,14 @@ def game_loop():
     alive = True
     temp_clock = []
     level = 1
-    word = []
+    score = 0
     while alive:
         screen.fill(WHITE)
         screen.blit(bg,(0,0))
 
         if not done:
-            create_zombies(3)
-            create_devils(3)
+            create_zombies(1)
+            create_devils(1)
             done = True
 
         for zombs in zombies:
@@ -146,7 +158,7 @@ def game_loop():
                 p.get_hit()
                 zombs.kill()
 
-
+                score -= 5
 
                 print('you got hit')
 
@@ -158,6 +170,8 @@ def game_loop():
                 blood_spots.append((devs.rect.x,devs.rect.y))
                 p.get_hit()
                 devs.kill()
+
+                score -= 10
                 print('you got hit')
 
             if pygame.time.get_ticks() - devs.last_shot >= 2000:
@@ -181,15 +195,18 @@ def game_loop():
                         blood_spots.append((zombs.rect.x, zombs.rect.y))
                         zombs.kill()
                         m.kill()
+                        score += 5
             for devs in devils:
                 if m.target == "enemy":
                     if devs.rect.colliderect(m.rect):
                         blood_spots.append((devs.rect.x, devs.rect.y))
                         devs.kill()
                         m.kill()
+                        score += 10
             if p.rect.colliderect(m.rect):
                 if m.target == "player":
                     p.get_hit()
+                    score -= 5
                     m.kill()
 
 
@@ -251,6 +268,8 @@ def game_loop():
             p.draw_health(screen)
         else:
             alive = False
+            kill_all()
+            check_score(score)
             start_screen()
             print('Game Over')
 
@@ -272,7 +291,7 @@ def game_loop():
             except IndexError:
                 temp_clock.append(pygame.time.get_ticks())
 
-
+        level_clear_message(str(score), 20, 450)
         pygame.display.flip()
         clock.tick(60)
 
@@ -286,7 +305,11 @@ def level_clear_message(level, x , y):
     screen.blit(message,(x,y))
 
 
-
+def kill_all():
+    for z in zombies:
+        z.kill()
+    for d in devils:
+        d.kill()
 
 def create_zombies(n):
     for i in range(n):
@@ -301,6 +324,13 @@ def create_devils(n):
         d.rect.x = random.randint(0,500)
         d.rect.y = random.randint(0,500)
         devils.add(d)
+
+
+def check_score(score):
+    with open("scores.txt") as f:
+        first = f.readline()
+        print(first, type(first))
+        f.close()
 
 
 
