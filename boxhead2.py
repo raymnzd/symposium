@@ -136,7 +136,7 @@ def show_scores():
 
 
 def game_loop():
-    p.set_health(10)
+    p.set_health(100)
     done = False
     blood_spots = []
     can_shoot = True
@@ -153,6 +153,9 @@ def game_loop():
     while alive:
         screen.fill(WHITE)
         screen.blit(bg,(0,0))
+
+        for spots in blood_spots:
+            screen.blit(bloodpic, (spots[0],spots[1]))
 
         if not done:
             create_zombies(1)
@@ -189,9 +192,7 @@ def game_loop():
                     missiles.add(m)
 
 
-        for spots in blood_spots:
-            screen.blit(bloodpic, (spots[0],spots[1]))
-            level_clear_message("Nice", spots[0], spots[1] - 30)
+
 
         for m in missiles:
             m.update()
