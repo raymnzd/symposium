@@ -43,6 +43,12 @@ my_font = pygame.font.SysFont("kalinga", 16)
 
 p = player.Player()
 
+f = open("scores.txt", "r")
+top_score = int(f.readline())
+
+
+
+
 
 def start_screen():
     global blood
@@ -93,7 +99,7 @@ def start_screen():
         screen.blit(bg,(0,0))
         screen.blit(name, (0, 480))
         screen.blit(start_text, (230, 240))
-        screen.blit(score_text, (205, 290))
+        screen.blit(score_text, (210, 290))
         screen.blit(boxpic, (100, 50))
 
         #circle outline for buttons
@@ -123,11 +129,9 @@ def start_screen():
 
 
 def show_scores():
-    try:
-        with open("scores.txt") as f:
-            print(f.read())
-    except IOError:
-        pass
+    f = open("scores.txt", "r")
+    print(int(f.readline()))
+    f.close()
     start_screen()
 
 
@@ -141,6 +145,11 @@ def game_loop():
     temp_clock = []
     level = 1
     score = 0
+
+    sub_score = lambda x: 0 if score - x <= 0 else score - x
+
+
+
     while alive:
         screen.fill(WHITE)
         screen.blit(bg,(0,0))
@@ -158,9 +167,8 @@ def game_loop():
                 p.get_hit()
                 zombs.kill()
 
-                score -= 5
+                score = sub_score(5)
 
-                print('you got hit')
 
 
         for devs in devils:
@@ -171,8 +179,7 @@ def game_loop():
                 p.get_hit()
                 devs.kill()
 
-                score -= 10
-                print('you got hit')
+                score = sub_score(10)
 
             if pygame.time.get_ticks() - devs.last_shot >= 2000:
                 chance = random.random()
@@ -206,7 +213,7 @@ def game_loop():
             if p.rect.colliderect(m.rect):
                 if m.target == "player":
                     p.get_hit()
-                    score -= 5
+                    score = sub_score(5)
                     m.kill()
 
 
@@ -278,7 +285,6 @@ def game_loop():
             level_clear_message(level, 170, 50)
             try:
                 if pygame.time.get_ticks() - temp_clock[level] >= 5000:
-                    print("going to create zombies")
                     blood_spots.clear()
                     missiles.empty()
                     create_devils(level * 2)
@@ -296,6 +302,9 @@ def game_loop():
         clock.tick(60)
 
 
+
+
+#clear message or any message
 def level_clear_message(level, x , y):
     global my_font
     if type(level) is int:
@@ -304,13 +313,15 @@ def level_clear_message(level, x , y):
         message = my_font.render(level, True, PURPLE)
     screen.blit(message,(x,y))
 
-
+#clear enemies when dead
 def kill_all():
     for z in zombies:
         z.kill()
     for d in devils:
         d.kill()
 
+
+#spawn zombies
 def create_zombies(n):
     for i in range(n):
         z = zombie.Zombie()
@@ -318,6 +329,7 @@ def create_zombies(n):
         z.rect.y = random.randint(0,500)
         zombies.add(z)
 
+#spawn devils
 def create_devils(n):
     for i in range(n):
         d = devil.Devil()
@@ -325,13 +337,14 @@ def create_devils(n):
         d.rect.y = random.randint(0,500)
         devils.add(d)
 
-
+#check score and update
 def check_score(score):
-    with open("scores.txt") as f:
-        first = f.readline()
-        print(first, type(first))
-        f.close()
-
+    global top_score
+    f = open("scores.txt", "w")
+    if score > top_score:
+        f.write(str(score))
+        top_score = int(score)
+    f.close()
 
 
 
