@@ -1,282 +1,353 @@
-#START THE GAME HERE
-
 import pygame
-import random
-import numpy as np
-import matplotlib.pyplot as plt
 import os
-import threading
-import time
-import math
+import random
+import blood
+import player
+import zombie
+import missile
+import devil
+from zombie import Zombie
+from devil import Devil
+from sprites import *
 from pygame import gfxdraw
-from constants import *
+
+from message import blit_text
 
 
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+
+screen_width = 500
+screen_height = 500
+screen = pygame.display.set_mode([screen_width, screen_height])
+pygame.display.set_caption("Boxhead by Raymond Zhao")
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+PURPLE = (255, 0, 255)
+RED = (250, 20 , 0)
+
+clock = pygame.time.Clock()
+shot_clock = pygame.time.Clock()
+
+
+zombies = pygame.sprite.Group()
+devils = pygame.sprite.Group()
+missiles = pygame.sprite.Group()
+
+bg = pygame.image.load("images/background.jpg")
+bg = pygame.transform.scale(bg, (500,500))
+
+nice = ["Nice!", "Wow!", "Boom!"]
 
 pygame.init()
-# all_fonts = pygame.font.get_fonts()
-
-
-class Blood(pygame.sprite.Sprite):
-
-    def __init__(self):
-        super().__init__()
-        self.image = bloodpic
-        self.rect = self.image.get_rect()
-
-    def update(self):
-        self.rect.x = random.randrange(screen_width)
-        self.rect.y = random.randrange(screen_height)
-        pygame.display.update()
-
-blood_sprites = pygame.sprite.Group()
-
-for i in range(3):
-    blood = Blood()
-    blood.rect.x = random.randrange(screen_width)
-    random.randrange(screen_height)
-    blood_sprites.add(blood)
-    pygame.display.flip()
-
-
-
-
-class Player(pygame.sprite.Sprite):
-
-    def __init__(self):
-        super().__init__()
-        self.image = player_down_pic
-        self.rect = self.image.get_rect()
-        self.rect.x = 240
-        self.rect.y = 220
-        self.health = 100
-
-    def move(self, dir):
-        global move_map
-        self.rect.x += move_map[dir][0]
-        self.rect.y += move_map[dir][1]
-
-    def draw_health(self):
-        r = min(255, 255 - (255 * ((self.health - (100 - self.health)) / 100)))
-        g = min(255, 255 * (self.health / (100 / 2)))
-        color = (r, g, 0)
-        width = int(500 * self.health / 100)
-        self.health_bar = (0, 490, width, 10)
-        if self.health <= 100:
-            pygame.draw.rect(screen, color, self.health_bar)
-
-p = Player()
-print("ASDASDSAD")
-
-class Zombie(pygame.sprite.Sprite):
-
-    def __init__(self):
-        super().__init__()
-        self.image = zombie_up_pic
-        self.rect = self.image.get_rect()
-        self.rect.x = 100
-        self.rect.y = 100
-
-    def update(self):
-        self.rect = self.rect.move(1,1)
-
-        # print(self.rect.x, self.rect.y)
-        # pygame.display.update()
-
-
 my_font = pygame.font.SysFont("kalinga", 16)
-class Start():
 
-    def __init__(self):
-        global my_font
+p = player.Player()
 
-        self.name = my_font.render("Created by Raymond Zhao", True, (0, 0, 0))
-        self.name_rect = self.name.get_rect()
-        self.start_text = my_font.render("Start", True, RED )
-        self.start_rect = self.start_text.get_rect()
-
-        pass
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONUP:
-            pos = pygame.mouse.get_pos()
-            if pos[0] >= 200 and pos[0] <= 300:
-                if pos[1] >= 230 and pos[1] <= 270:
-                    global scene
-                    scene = scenes['Play']
+f = open("scores.txt", "r")
+top_score = int(f.readline())
 
 
 
-        if event.type == pygame.QUIT:
-            running = False
-            print('this should stop')
 
 
-    def draw(self):
-        screen.fill(PURPLE)
-        screen.blit(self.name, (0,480))
-        screen.blit(boxpic, (100,50))
+def start_screen():
+    global blood
+    global my_font
+    fade = False
+    start = True
+    alph = 0
+    alphaSurface = pygame.Surface((500, 500))  # The custom-surface of the size of the screen.
+    alphaSurface.fill((255, 255, 255))  # Fill it with whole white before the main-loop.
+    alphaSurface.set_alpha(0)
+    blood_sprites = pygame.sprite.Group()
 
-        self.button = pygame.gfxdraw.aaellipse(screen, 250, 250, 50, 20, RED)
-        screen.blit(self.start_text, (230,240))
-        # pygame.draw.filled_ellipse(screen, 250, 250, 50, 20, RED)
+    from blood import Blood
+    for i in range(3):
+        bld = Blood()
+        bld.rect.x = random.randrange(screen_width)
+        random.randrange(screen_height)
+        blood_sprites.add(bld)
+        pygame.display.flip()
 
-        timer_event = pygame.USEREVENT + 1
-        pygame.time.set_timer(timer_event, 1)
+    #my intro
+
+    while not fade:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        if pygame.time.get_ticks() > 1000 and not fade:
+            fade = True
+        else:
+            screen.fill((0, 0, 0))  # At each main-loop fill the whole screen with black.
+            alph += 1  # Increment alpha by a really small value (To make it slower, try 0.01)
+            alphaSurface.set_alpha(alph)  # Set the incremented alpha-value to the custom surface.
+            screen.blit(alphaSurface, (0, 0))  # Blit it to the screen-surface (Make them separate)
+
+        pygame.display.flip()
+
+
+    #stuff to put on start screen
+
+    name = my_font.render("Created by Raymond Zhao", True, (0, 0, 0))
+    start_text = my_font.render("Start", True, RED)
+    score_text = my_font.render("Top Score", True, RED)
+
+
+    while start:
+        screen.fill(WHITE)
+        screen.blit(bg,(0,0))
+        screen.blit(name, (0, 480))
+        screen.blit(start_text, (230, 240))
+        screen.blit(score_text, (210, 290))
+        screen.blit(boxpic, (100, 50))
+
+        #circle outline for buttons
+        button = pygame.gfxdraw.aaellipse(screen, 250, 250, 50, 20, RED)
+        sButton = pygame.gfxdraw.aaellipse(screen, 250, 300, 50, 20, RED)
+
+        pos = pygame.mouse.get_pos()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.MOUSEBUTTONUP:
+                if pos[0] >= 200 and pos[0] <= 300:
+                    if pos[1] >= 230 and pos[1] <= 270:
+                        start = False
+                        game_loop()
+                    if pos[1] >= 276 and pos[1] <= 320:
+                        start = False
+                        show_scores()
         for blood in blood_sprites:
             screen.blit(blood.image, (blood.rect.x, blood.rect.y))
             blood.update()
             pygame.display.flip()
-
-
-    def update(self):
-        pass
-
-
-class Play():
-
-    def __init__(self):
-        global p
-        self.x = 0
-        self.clicked = False
-        if scene == self:
-            self.slide()
-
-        self.player = p
-        self.tempx = 50
-        self.tempy = 50
-        self.zombies = Zombie()
-
-    def handle_event(self, event):
-        pressed = pygame.key.get_pressed()
-
-        if pressed[pygame.K_a] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
-            self.player.move('a')
-            self.player.image = player_left_pic
-
-        if pressed[pygame.K_w]:
-            if pressed[pygame.K_a]:
-                self.player.move('wa')
-                self.player.image = player_upleft_pic
-            elif pressed[pygame.K_d]:
-                self.player.move('wd')
-                self.player.image = player_upright_pic
-            else:
-                self.player.move('w')
-                self.player.image = player_up_pic
-
-        if pressed[pygame.K_s]:
-            if pressed[pygame.K_a]:
-                self.player.move('sa')
-                self.player.image = player_downleft_pic
-            elif pressed[pygame.K_d]:
-                self.player.move('sd')
-                self.player.image = player_downright_pic
-            else:
-                self.player.move('s')
-                self.player.image = player_down_pic
-
-        if pressed[pygame.K_d] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
-            self.player.move('d')
-            self.player.image = player_right_pic
-
-
-        if pressed[pygame.K_SPACE]:
-            self.player.health -= 1
-            self.draw()
-            threading.Event.wait(1000)
-
-
-
-
-
-
-
-    def slide(self):
-        self.x += 1
-        screen.fill(WHITE)
-        surf = pygame.draw.rect(screen, (0, 0, 255), (self.x, 0, 500, 500))
-        fight = my_font.render("fight", True, (0, 0, 0))
-
-        screen.blit(fight, (self.tempx, self.tempy))
-        self.tempx += 1
-
-    def draw(self):
-        global my_font
-        if scene == self:
-            self.slide()
-        # pygame.draw.rect(screen, (PURPLE), (0, 0, 50, 50))
-        x = 0
-        # if scene == self:
-        #     while surf.x < 510:
-        #         pygame.display.update()
-        #         screen.fill((255, 255, 255))
-        #         surf = pygame.draw.rect(screen, (0, 0, 255), (x, 0, 500, 500))
-        #         time.sleep(.03)
-        #         x += 1
-        self.zombies.update()
-        screen.blit(self.zombies.image, (self.zombies.rect.x,self.zombies.rect.y))
-        screen.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
-        self.player.draw_health()
-        screen.fil(WHITE)
         pygame.display.flip()
 
 
 
-    def update(self):
-        pass
+def show_scores():
+    f = open("scores.txt", "r")
+    print(int(f.readline()))
+    f.close()
+    start_screen()
+
+
+def game_loop():
+    p.set_health(100)
+    done = False
+    blood_spots = []
+    can_shoot = True
+    last_shot = 1000
+    alive = True
+    temp_clock = []
+    level = 1
+    score = 0
+
+    sub_score = lambda x: 0 if score - x <= 0 else score - x
 
 
 
-scene = ""
-scenes = {'Start': Start(), 'Play': Play()}
+    while alive:
+        screen.fill(WHITE)
+        screen.blit(bg,(0,0))
+
+        for spots in blood_spots:
+            screen.blit(bloodpic, (spots[0],spots[1]))
+
+        if not done:
+            create_zombies(1)
+            create_devils(1)
+            done = True
+
+        for zombs in zombies:
+            zombs.move_towards_player(p)
+            screen.blit(zombs.image, (zombs.rect.x, zombs.rect.y))
+            if zombs.rect.colliderect(p.rect):
+                blood_spots.append((zombs.rect.x,zombs.rect.y))
+                p.get_hit()
+                zombs.kill()
+
+                score = sub_score(5)
 
 
-class Boxhead():
 
-    def __init__(self):
+        for devs in devils:
+            devs.move_towards_player(p)
+            screen.blit(devs.image, (devs.rect.x, devs.rect.y))
+            if devs.rect.colliderect(p.rect):
+                blood_spots.append((devs.rect.x,devs.rect.y))
+                p.get_hit()
+                devs.kill()
 
-        self.screen = screen
-        self.alphaSurface = pygame.Surface((500, 500))  # The custom-surface of the size of the screen.
-        self.alphaSurface.fill((255, 255, 255))  # Fill it with whole white before the main-loop.
-        self.alphaSurface.set_alpha(0)  # Set alpha to 0 before the main-loop.
-        self.alph = 0  # The increment-variable.
-        self.started = False
-        self.start()
+                score = sub_score(10)
+
+            if pygame.time.get_ticks() - devs.last_shot >= 2000:
+                chance = random.random()
+                if chance < .05:
+                    devs.last_shot = pygame.time.get_ticks()
+                    m = missile.Missile(p, devs)
+                    missiles.add(m)
 
 
-    def start(self):
-        running = True
-        global scene
-        global scenes
-        while running:
 
-            clock.tick(60)
 
-            if pygame.time.get_ticks() > 2500 and not self.started:
-                scene = scenes['Start']
-                scene.draw()
-                self.started = True
-                print('lol')
+        for m in missiles:
+            m.update()
+            screen.blit(m.image, (m.rect.x, m.rect.y))
+            for zombs in zombies:
+                if m.target == "enemy":
+                    if zombs.rect.colliderect(m.rect):
+                        blood_spots.append((zombs.rect.x, zombs.rect.y))
+                        zombs.kill()
+                        m.kill()
+                        score += 5
+            for devs in devils:
+                if m.target == "enemy":
+                    if devs.rect.colliderect(m.rect):
+                        blood_spots.append((devs.rect.x, devs.rect.y))
+                        devs.kill()
+                        m.kill()
+                        score += 10
+            if p.rect.colliderect(m.rect):
+                if m.target == "player":
+                    p.get_hit()
+                    score = sub_score(5)
+                    m.kill()
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        screen.blit(p.image, (p.rect.x,p.rect.y))
+        pressed = pygame.key.get_pressed()
+
+        if pressed[pygame.K_a] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
+            p.move('a')
+            p.image = player_left_pic
+            p.dir = 'a'
+
+        if pressed[pygame.K_w]:
+            if pressed[pygame.K_a]:
+                p.move('wa')
+                p.image = player_upleft_pic
+                p.dir = 'wa'
+            elif pressed[pygame.K_d]:
+                p.move('wd')
+                p.image = player_upright_pic
+                p.dir = 'wd'
             else:
-                self.screen.fill((0, 0, 0))  # At each main-loop fill the whole screen with black.
-                self.alph += 1  # Increment alpha by a really small value (To make it slower, try 0.01)
-                self.alphaSurface.set_alpha(self.alph)  # Set the incremented alpha-value to the custom surface.
-                self.screen.blit(self.alphaSurface, (0, 0))  # Blit it to the screen-surface (Make them separate)
+                p.move('w')
+                p.image = player_up_pic
+                p.dir = 'w'
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+        if pressed[pygame.K_s]:
+            if pressed[pygame.K_a]:
+                p.move('sa')
+                p.image = player_downleft_pic
+                p.dir = 'sa'
+            elif pressed[pygame.K_d]:
+                p.move('sd')
+                p.image = player_downright_pic
+                p.dir = 'sd'
+            else:
+                p.move('s')
+                p.image = player_down_pic
+                p.dir = 's'
+
+        if pressed[pygame.K_d] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
+            p.move('d')
+            p.image = player_right_pic
+            p.dir = 'd'
 
 
-                try:
-                    scene.handle_event(event)
-                    scene.update()
-                    scene.draw()
-                except:
-                    pass
-            pygame.display.flip()
+        if pressed[pygame.K_SPACE]:
+            if pygame.time.get_ticks() - last_shot >= 400:
+                last_shot = pygame.time.get_ticks()
+                shot_clock.tick()
+                m = missile.Missile(p,'player')
+                missiles.add(m)
+
+        if p.get_health() > 0:
+            p.draw_health(screen)
+        else:
+            alive = False
+            kill_all()
+            check_score(score)
+            start_screen()
+            print('Game Over')
 
 
-if __name__ == "__main__":
-    game = Boxhead()
+        if len(zombies) + len(devils) == 0:
+            level_clear_message(level, 170, 50)
+            try:
+                if pygame.time.get_ticks() - temp_clock[level] >= 5000:
+                    blood_spots.clear()
+                    missiles.empty()
+                    create_devils(level * 2)
+                    create_zombies(level * 2)
+                    level += 1
+                    if p.get_health() + 10 < 100:
+                        p.set_health(p.get_health() + 10)
+                    else:
+                        p.set_health(100)
+            except IndexError:
+                temp_clock.append(pygame.time.get_ticks())
+
+        level_clear_message(str(score), 20, 450)
+        pygame.display.flip()
+        clock.tick(60)
+
+
+
+
+#clear message or any message
+def level_clear_message(level, x , y):
+    global my_font
+    if type(level) is int:
+        message = my_font.render("Level " + str(level) + " has been cleared! ", True, RED)
+    else:
+        message = my_font.render(level, True, PURPLE)
+    screen.blit(message,(x,y))
+
+#clear enemies when dead
+def kill_all():
+    for z in zombies:
+        z.kill()
+    for d in devils:
+        d.kill()
+
+
+#spawn zombies
+def create_zombies(n):
+    for i in range(n):
+        z = zombie.Zombie()
+        z.rect.x = random.randint(0,500)
+        z.rect.y = random.randint(0,500)
+        zombies.add(z)
+
+#spawn devils
+def create_devils(n):
+    for i in range(n):
+        d = devil.Devil()
+        d.rect.x = random.randint(0,500)
+        d.rect.y = random.randint(0,500)
+        devils.add(d)
+
+#check score and update
+def check_score(score):
+    global top_score
+    f = open("scores.txt", "w")
+    if score > top_score:
+        f.write(str(score))
+        top_score = int(score)
+    f.close()
+
+
+
+
+start_screen()
