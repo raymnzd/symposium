@@ -12,9 +12,11 @@ boxpic = pygame.image.load(("images/boxhead.png"))
 bloodpic = pygame.image.load(('images/blood.png'))
 bloodpic = pygame.transform.scale(bloodpic, (50,50))
 
-
 player_up_pic = pygame.image.load(("images/player/player_up.png"))
 player_up_pic = pygame.transform.scale(player_up_pic, (25,25))
+
+medpic = pygame.image.load(("images/medkit.png"))
+medpic = pygame.transform.scale(medpic, (20,20))
 
 """                                          
             PLAYER PICTURES!
