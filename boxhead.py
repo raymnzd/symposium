@@ -6,6 +6,7 @@ import player
 import zombie
 import missile
 import devil
+from medkit import MedKit
 from zombie import Zombie
 from devil import Devil
 from sprites import *
@@ -32,6 +33,7 @@ shot_clock = pygame.time.Clock()
 zombies = pygame.sprite.Group()
 devils = pygame.sprite.Group()
 missiles = pygame.sprite.Group()
+medkits = pygame.sprite.Group()
 
 bg = pygame.image.load("images/background.jpg")
 bg = pygame.transform.scale(bg, (500,500))
@@ -162,6 +164,14 @@ def game_loop():
             create_devils(1)
             done = True
 
+
+
+        for m in medkits:
+            screen.blit(m.image, (m.rect.x,m.rect.y))
+            if m.rect.colliderect(p.rect):
+                p.heal()
+                m.kill()
+
         for zombs in zombies:
             zombs.move_towards_player(p)
             screen.blit(zombs.image, (zombs.rect.x, zombs.rect.y))
@@ -226,17 +236,17 @@ def game_loop():
         screen.blit(p.image, (p.rect.x,p.rect.y))
         pressed = pygame.key.get_pressed()
 
-        if pressed[pygame.K_a] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
+        if pressed[pygame.K_LEFT] and not pressed[pygame.K_UP] and not pressed[pygame.K_DOWN]:
             p.move('a')
             p.image = player_left_pic
             p.dir = 'a'
 
-        if pressed[pygame.K_w]:
-            if pressed[pygame.K_a]:
+        if pressed[pygame.K_UP]:
+            if pressed[pygame.K_LEFT]:
                 p.move('wa')
                 p.image = player_upleft_pic
                 p.dir = 'wa'
-            elif pressed[pygame.K_d]:
+            elif pressed[pygame.K_RIGHT]:
                 p.move('wd')
                 p.image = player_upright_pic
                 p.dir = 'wd'
@@ -245,12 +255,12 @@ def game_loop():
                 p.image = player_up_pic
                 p.dir = 'w'
 
-        if pressed[pygame.K_s]:
+        if pressed[pygame.K_DOWN]:
             if pressed[pygame.K_a]:
                 p.move('sa')
                 p.image = player_downleft_pic
                 p.dir = 'sa'
-            elif pressed[pygame.K_d]:
+            elif pressed[pygame.K_RIGHT]:
                 p.move('sd')
                 p.image = player_downright_pic
                 p.dir = 'sd'
@@ -259,7 +269,7 @@ def game_loop():
                 p.image = player_down_pic
                 p.dir = 's'
 
-        if pressed[pygame.K_d] and not pressed[pygame.K_w] and not pressed[pygame.K_s]:
+        if pressed[pygame.K_RIGHT] and not pressed[pygame.K_UP] and not pressed[pygame.K_DOWN]:
             p.move('d')
             p.image = player_right_pic
             p.dir = 'd'
@@ -295,6 +305,8 @@ def game_loop():
                         p.set_health(p.get_health() + 10)
                     else:
                         p.set_health(100)
+                        spawn_medkit()
+
             except IndexError:
                 temp_clock.append(pygame.time.get_ticks())
 
@@ -302,6 +314,10 @@ def game_loop():
         pygame.display.flip()
         clock.tick(60)
 
+
+def spawn_medkit():
+    m = MedKit()
+    medkits.add(m)
 
 
 
@@ -342,7 +358,7 @@ def create_devils(n):
 def check_score(score):
     global top_score
     f = open("scores.txt", "w")
-    if score > top_score:
+    if score >= top_score:
         f.write(str(score))
         top_score = int(score)
     f.close()

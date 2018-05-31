@@ -37,6 +37,12 @@ class Player(pygame.sprite.Sprite):
     def get_hit(self):
         self.health -= 5
 
+    def heal(self):
+        if self.health + 10 > 100:
+            self.health = 100
+        else:
+            self.health += 10
+
     def get_health(self):
         return self.health
 
