@@ -138,7 +138,9 @@ def show_scores():
 
 
 def game_loop():
-    p.set_health(100)
+    hitx = []
+    hity = []
+    p.set_health(30)
     done = False
     blood_spots = []
     can_shoot = True
@@ -181,7 +183,8 @@ def game_loop():
                 zombs.kill()
 
                 score = sub_score(5)
-
+                hitx.append(p.rect.x)
+                hity.append(p.rect.y)
 
 
         for devs in devils:
@@ -193,6 +196,8 @@ def game_loop():
                 devs.kill()
 
                 score = sub_score(10)
+                hitx.append(p.rect.x)
+                hity.append(p.rect.y)
 
             if pygame.time.get_ticks() - devs.last_shot >= 2000:
                 chance = random.random()
@@ -225,6 +230,8 @@ def game_loop():
                 if m.target == "player":
                     p.get_hit()
                     score = sub_score(5)
+                    hitx.append(p.rect.x)
+                    hity.append(p.rect.y)
                     m.kill()
 
 
@@ -288,6 +295,7 @@ def game_loop():
             alive = False
             kill_all()
             check_score(score)
+            show_hits(hitx, hity)
             start_screen()
             print('Game Over')
 
@@ -313,6 +321,18 @@ def game_loop():
         level_clear_message(str(score), 20, 450)
         pygame.display.flip()
         clock.tick(60)
+
+def show_hits(x,y):
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    plt.scatter(x,y)
+    plt.title('Where You Were Hit')
+    plt.axis('off')
+    plt.xlim(0, 500)  # decreasing time
+    plt.ylim(500,0)
+
+    plt.show()
 
 
 def spawn_medkit():
