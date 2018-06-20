@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 import blood
+import time
 import player
 import zombie
 import missile
@@ -45,9 +46,12 @@ my_font = pygame.font.SysFont("kalinga", 16)
 
 p = player.Player()
 
-f = open("scores.txt", "r")
-top_score = int(f.readline())
-
+try:
+    f = open("scores.txt", "r")
+    top_score = int(f.readline())
+except:
+    f = open("scores.txt", "w")
+    f.write('0')
 
 
 
@@ -140,7 +144,7 @@ def show_scores():
 def game_loop():
     hitx = []
     hity = []
-    p.set_health(30)
+    p.set_health(100)
     done = False
     blood_spots = []
     can_shoot = True
@@ -292,6 +296,9 @@ def game_loop():
         if p.get_health() > 0:
             p.draw_health(screen)
         else:
+            p.set_health(0)
+            p.draw_health(screen)
+            pygame.display.flip()
             alive = False
             kill_all()
             check_score(score)
