@@ -4,4 +4,4 @@ The popular game Boxhead remade
   * python3.7
   * pygame
   * matplotlib
-  * np
+  * numpy
